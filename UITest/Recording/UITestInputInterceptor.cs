@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +10,30 @@ namespace ODDGames.UITest
     public class UITestInputInterceptor : MonoBehaviour
     {
         public static UITestInputInterceptor Instance { get; private set; }
+
+        // Delegate for custom component type detection (used by EzGUI module, etc.)
+        public delegate string ComponentTypeDetector(GameObject go);
+        private static List<ComponentTypeDetector> componentTypeDetectors = new();
+
+        /// <summary>
+        /// Register a custom component type detector.
+        /// Called by extension modules (e.g., EzGUI) to detect their component types.
+        /// </summary>
+        public static void RegisterComponentTypeDetector(ComponentTypeDetector detector)
+        {
+            if (detector != null && !componentTypeDetectors.Contains(detector))
+            {
+                componentTypeDetectors.Add(detector);
+            }
+        }
+
+        /// <summary>
+        /// Unregister a component type detector.
+        /// </summary>
+        public static void UnregisterComponentTypeDetector(ComponentTypeDetector detector)
+        {
+            componentTypeDetectors.Remove(detector);
+        }
 
         const float DRAG_THRESHOLD = 20f;
         const float HOLD_THRESHOLD = 0.5f;
@@ -279,6 +304,15 @@ namespace ODDGames.UITest
         {
             if (go == null) return "";
 
+            // Check custom detectors first (e.g., EZ GUI types)
+            foreach (var detector in componentTypeDetectors)
+            {
+                var result = detector(go);
+                if (!string.IsNullOrEmpty(result))
+                    return result;
+            }
+
+            // Standard Unity UI types
             if (go.GetComponent<Button>()) return "Button";
             if (go.GetComponent<Toggle>()) return "Toggle";
             if (go.GetComponent<Slider>()) return "Slider";
