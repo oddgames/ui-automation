@@ -1,11 +1,12 @@
 {
   "name": "com.oddgames.uitest",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "ODD Games UI Test Framework",
   "description": "UI automation testing framework for Unity projects",
   "unity": "2022.3",
   "dependencies": {
-    "com.unity.textmeshpro": "3.0.0"
+    "com.unity.textmeshpro": "3.0.0",
+    "com.cysharp.unitask": "2.5.0"
   },
   "keywords": [
     "ui",
