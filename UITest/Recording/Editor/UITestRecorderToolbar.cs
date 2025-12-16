@@ -1,3 +1,4 @@
+#if HAS_TOOLBAR_EXTENDER
 using UnityEditor;
 using UnityEngine;
 
@@ -133,3 +134,4 @@ namespace ODDGames.UITest.Editor
         }
     }
 }
+#endif

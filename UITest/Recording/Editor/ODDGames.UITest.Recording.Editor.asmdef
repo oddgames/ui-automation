@@ -6,7 +6,8 @@
         "ODDGames.UITest.Recording",
         "ODDGames.UITest.Editor",
         "Unity.TextMeshPro",
-        "UniTask"
+        "UniTask",
+        "ToolbarExtender"
     ],
     "includePlatforms": [
         "Editor"
@@ -17,6 +18,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.marijnzwemmer.unity-toolbar-extender",
+            "expression": "",
+            "define": "HAS_TOOLBAR_EXTENDER"
+        }
+    ],
     "noEngineReferences": false
 }
