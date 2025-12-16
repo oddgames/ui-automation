@@ -5,16 +5,20 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEditor;
+#if UNITY_RECORDER
 using UnityEditor.Recorder;
 using UnityEditor.Recorder.Input;
+#endif
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using ODDGames.UITest;
 
 public class UITestRunner
 {
+#if UNITY_RECORDER
     private static RecorderControllerSettings recorderControllerSettings;
     private static RecorderController recorderController;
+#endif
     private static List<string> capturedLogs = new List<string>();
     private static string currentVideoPath;
     private static Queue<UITestInfo> pendingTests;
@@ -451,6 +455,7 @@ public class UITestRunner
 
     private static void SetupVideoRecording(string outputPath)
     {
+#if UNITY_RECORDER
         if (Application.isBatchMode)
         {
             Debug.Log("[UITestRunner] Batch mode detected - using camera-based recording");
@@ -509,10 +514,14 @@ public class UITestRunner
 
             recorderController = new RecorderController(recorderControllerSettings);
         }
+#else
+        Debug.LogWarning("[UITestRunner] Unity Recorder package not installed - video recording disabled");
+#endif
     }
 
     private static void StartVideoRecording()
     {
+#if UNITY_RECORDER
         if (recorderController != null && recorderController.StartRecording())
         {
             Debug.Log("[UITestRunner] Video recording started");
@@ -521,15 +530,18 @@ public class UITestRunner
         {
             Debug.LogWarning("[UITestRunner] Failed to start video recording");
         }
+#endif
     }
 
     private static void StopVideoRecording()
     {
+#if UNITY_RECORDER
         if (recorderController != null && recorderController.IsRecording())
         {
             recorderController.StopRecording();
             Debug.Log("[UITestRunner] Video recording stopped");
         }
+#endif
     }
 
     private static List<UITestInfo> FindAllUITestBehaviours()

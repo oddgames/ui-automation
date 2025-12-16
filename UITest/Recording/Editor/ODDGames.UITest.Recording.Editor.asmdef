@@ -1,0 +1,22 @@
+{
+    "name": "ODDGames.UITest.Recording.Editor",
+    "rootNamespace": "ODDGames.UITest.Editor",
+    "references": [
+        "ODDGames.UITest",
+        "ODDGames.UITest.Recording",
+        "ODDGames.UITest.Editor",
+        "Unity.TextMeshPro",
+        "UniTask"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
