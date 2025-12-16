@@ -7,7 +7,7 @@
         "ODDGames.UITest.Editor",
         "Unity.TextMeshPro",
         "UniTask",
-        "ToolbarExtender"
+        "ToolbarExtender.Editor"
     ],
     "includePlatforms": [
         "Editor"
