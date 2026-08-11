@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.186] - 2026-08-11
+
+### Changed
+- iOS reports no longer block the calling thread. Report assembly (video ring dump + gzip of the whole session log ring, up to 16 MB) ran synchronously — on the main queue for the report form, and on the exception's own thread for auto-reported exceptions — so the game froze for the whole remux + zip before a single byte was sent. Both paths now assemble on a background queue. Safe for the severe cases because a real crash / OOM is written to disk by the signal handler and drained on next launch, so they never depended on this path finishing; managed exceptions don't kill the process. The sticky upload banner is now raised when a submit STARTS (past the early-return guards, so it can't be orphaned) rather than when the manifest is queued, so the 'still sending' state covers assembly too instead of a toast fading into silence.
+
 ## [0.8.185] - 2026-08-11
 
 ### Changed
