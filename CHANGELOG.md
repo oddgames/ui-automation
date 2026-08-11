@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.185] - 2026-08-11
+
+### Changed
+- Hands-free tester reporting: Bugpunch.StartRecording() starts the capture ring with no consent sheet, no profile picker and no login, for alpha builds that should record continuously; Bugpunch.SetReportTriggers(shake, screenshot) lets a tester raise a report by shaking the device or taking a screenshot, landing on the same report form (and same screenshot/video/logs) as the debug widget's Report button. Reports work signed-out — attributed to the device. Shake: CoreMotion (iOS) / SensorManager (Android), 2.2g crossed twice within 600ms, 3s cooldown. Screenshot: full support on iOS; Android needs API 34+ (registerScreenCaptureCallback), silently unavailable below that. Managed lane (Editor/Standalone) is a deliberate no-op — no device sensors.
+
 ## [0.8.184] - 2026-08-06
 
 ### Changed
