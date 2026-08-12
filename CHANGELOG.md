@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.187] - 2026-08-12
+
+### Changed
+- iOS tunnel live-log batcher hardening: hard-cap the pending buffer at 2M chars (drop-oldest whole lines, loss reported in-stream), collapse consecutive duplicate lines into a repeat marker (crash ring unaffected), allow at most one flush dispatch in flight, and guard the enqueue/flush paths against Foundation throws — an error-log storm could otherwise balloon the buffer until a CFString OOM NSException aborted the host game.
+
 ## [0.8.186] - 2026-08-11
 
 ### Changed
