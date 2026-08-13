@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.188] - 2026-08-13
+
+### Changed
+- iOS: fix SDK-caused crashes in host games — ARC races on unsynchronised object globals. sCurrentScene was read from every SDK queue while the writer ran on sPerfQueue, so a reader's objc_retain could land on a string the writer had already freed; that crashed BPCaptureMemorySnapshot in the field (10 crashes across 10 devices). Same class of bug on sLatestCounters/sCounterNames/sCounterUnits (pushed from the Unity main thread with no lock while read under sTlLock — 2 crashes) and on gTesterRole. All three now sit behind locks with accessors, and the oom/scene_change events pass their scene explicitly instead of swapping the global around the call. Bugpunch_GetTesterRole and Bugpunch_CurrentSceneName return thread-local buffers rather than an autorelease-lifetime -UTF8String across the C ABI.
+- iOS: bp_ring_snapshot_data no longer kills the host game while capturing an ANR/OOM report. It allocated up to 16 MB with no nil check and memcpy'd into the result, faulting inside __platform_memmove at exactly the moment the process was out of memory. It now degrades to the newest 1 MB and gives up rather than crashing.
+- Logs: ring cut 16 MB to 4 MB on every lane (BPL_RING_BYTES on iOS and Android, SNAPSHOT_BUF_CAPACITY, and MAX_LOG_BYTES on the managed lane) — still whole-session at a normal log rate, and Android's report-time snapshot buffer drops with it. Safe across an app update: both prev-launch readers trust the header's ring_bytes rather than the constant, so a 16 MB ring left by the previous install still drains.
+- Perf: the SDK no longer allocates harder under memory pressure. A memory warning started the full perf timeline, whose 1 Hz tick pinged C# — which switched on the IL-woven method profiler and serialised 10 method rows a second into JSON that native parsed back into Obj-C and retained across a 660-slot ring, never freeing it once the window closed. Pressure-driven timelines now run numeric-only (no ping, no managed rows) and each window releases the previous one's rows. Both lanes.
+- Logs: a report could land with no logs and no reason why. BPWriteGzipLogs returned a valid EMPTY .gz when the ring was empty, BPGzipLogFile ignored gzclose's return value (shipping a truncated member the server cannot inflate) and accepted a zero-byte source, and the uploader skipped a missing attachment silently after phase 1 had already advertised it. The crash-tail append to the live log session is also revived — it read the raw dump three lines after the gzip step had deleted it.
+- Uploads: retry pacing and connectivity-edge triggers (sdk#93). A failed manifest is now paced (30s / 2m / 8m / 30m) instead of re-POSTing its whole payload on every subsequent enqueue, the queue self-reschedules to wake at the earliest parked deadline, and a connectivity edge wipes the schedule so a report filed during an offline QA pass ships on reconnect instead of waiting for the next app launch. Retention is 48h so a server outage no longer burns all 10 attempts in the first few launches.
+
 ## [0.8.187] - 2026-08-12
 
 ### Changed
