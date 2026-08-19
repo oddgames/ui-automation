@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.189] - 2026-08-19
+
+### Changed
+- iOS: drained crashes and ANRs no longer land with an empty device.os / device model. osVersion and deviceModel are runtime facts, so the build-time bundled config cannot carry them and the C# push only arrives once Unity has booted — but the crash drain and the +load report path both run before that. In prod this left 0 of 179 iOS crashes and 0 of 478 ANRs carrying an OS version, while managed exceptions (which by definition run post-boot) carried one 100% of the time. Both are now derived natively at StartDebugMode — UIDevice.systemVersion and sysctl hw.machine — so native never waits on Unity for a fact it already owns. Matches Android, which reads Build.VERSION / Build.MODEL natively.
+- iOS: the post-crash tester review stepper could silently never appear, stranding that crash's evidence. A window existing is not enough — the view controller it walked to can itself be mid-present, and UIKit refuses to present on a VC whose view is not yet in the window hierarchy, failing as a silent no-op. The crash then stayed reviewPending forever, the drain kept skipping it, and its screenshot / logs / video never uploaded; only the thin phase-1 ingest landed. Seen in the wild losing the stepper behind Bugpunch's own profile picker. The presenter is now checked for window attachment and mid-present/mid-dismiss state and retried on the existing backoff, and the present completion re-checks that UIKit actually took it (nil presentingViewController) rather than assuming success.
+
 ## [0.8.188] - 2026-08-13
 
 ### Changed
